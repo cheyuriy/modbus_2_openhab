@@ -19,6 +19,11 @@ def var_address_value(): return _(r'[0-9a-f]+')
 def var_type_value(): return _(r'bool|long|int|real')
 def var_name_value(): return _(r'.+')
 
+type_sizes = dict(bool=1, int=1, long=2, real=2)
+type_conversions = dict(bool='bit',
+                        int='int16',
+                        long='int32',
+                        real='float32_swap')
 
 class SegneticsVisitor(PTNodeVisitor):
 
@@ -32,10 +37,10 @@ class SegneticsVisitor(PTNodeVisitor):
         return int(node.value, 16)
 
     def visit_var_param(self, node, children):
-        return (children.var_name_value[0], 
-                dict(type=children.var_type_value[0], 
-                     name=children.var_name_value[0],
-                     addr=children.var_address_value[0]))
+        return dict(name=children.var_name_value[0],
+                    type=type_conversions[children.var_type_value[0]], 
+                    size=type_sizes[children.var_type_value[0]],
+                    addr=children.var_address_value[0])
     
     def visit_period_param(self, node, children):
         return None
@@ -70,13 +75,19 @@ class SegneticsVisitor(PTNodeVisitor):
             request_type = "input"
         if (type_param == "reg" and direction_param == "read/write"):
             request_type = "holding"
-        return (request_type, children.var_param)
+        
+        request_vars = sorted(children.var_param, key=lambda var: var['addr'])
+
+        start = request_vars[0]['addr']
+        size = request_vars[-1]['addr'] - start + request_vars[-1]['size']
+
+        return (request_type, dict(vars=request_vars, start=start, size=size))
 
     def visit_comment_entry(self, node, children):
         return None
 
     def visit_segnetics_file(self, node, children):
-        return children
+        return dict(list(children))
 
 
 def parse(content):

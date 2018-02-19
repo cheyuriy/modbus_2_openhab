@@ -2,6 +2,10 @@
 
 import logging
 import argparse
+import os
+import codecs
+from segnetics import parse as parse_segnetics
+from openhab_generators import generate_things
 
 logger = logging.getLogger('modbus_2_openhab')
 
@@ -14,8 +18,22 @@ def main() -> None:
 
     args = get_args()
 
-    print(args.input_file)
-    print(args.config_type)
+    with codecs.open(args.input_file, "r", encoding=args.encoding) as opened_file:
+        opened_file_content = opened_file.read()
+
+    requests_spec = None
+    if (args.config_type == 'segnetics'):
+        requests_spec = parse_segnetics(opened_file_content)
+
+    things_content = generate_things(requests_spec)
+
+    if not os.path.exists("output"):
+        os.makedirs("output")
+        
+    with codecs.open("output/modbus.things", "w", encoding="utf-8") as things_file:
+        things_file.write(things_content)
+
+    return things_content
 
 
 def get_args():
@@ -35,6 +53,12 @@ def get_args():
                            choices=['segnetics'],
                            default='segnetics',
                            help='specify format type of configuration')
+    argParser.add_argument('-e',
+                           metavar='used encoding',
+                           type=str,
+                           dest="encoding",
+                           default='cp1251',
+                           help='specify encoding of config file with any known charset for Python')
     args = argParser.parse_args()
 
     return args

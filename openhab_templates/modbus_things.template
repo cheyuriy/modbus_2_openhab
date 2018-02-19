@@ -1,0 +1,39 @@
+${tcp(tcp_data['host'], tcp_data['port'], tcp_data['id'])} {
+    % for type, req_data in requests_data.items():
+        ${poller(type, req_data['start'], req_data['size'], type)} {
+        % for var in req_data['vars']:
+            % if (type == 'coil' or type == 'holding'):
+            ${data(var['name'], var['addr'], var['type'], var['addr'], var['type'], type)}
+            % else:
+            ${data(var['name'], var['addr'], var['type'])}
+            % endif
+        % endfor
+    }
+    % endfor
+}
+
+<%!
+    import uuid
+
+    def get_id():
+        return uuid.uuid4()
+%>
+
+<%def name="tcp(host, port, id=1, name='TCP connect')">
+Bridge modbus:tcp:${get_id()} "${name}" [host="${host}", port=${port}, id=${id}, reconnectAfterMillis=120000] \
+</%def>
+
+<%def name="poller(name, start, length, type)">
+    Bridge modbus:poller:${get_id()} "${name}" [start=${start}, length=${length}, type="${type}"] \
+</%def>
+
+<%def name="data(name, readStart, readValueType, writeStart=None, writeValueType=None, writeType=None)">
+% if writeStart == None:
+        Thing modbus:data:${get_id()} "${name}" [readStart="${readStart}", readValueType="${readValueType}"] \
+% else: 
+        Thing modbus:data:${get_id()} "${name}" [readStart="${readStart}", readValueType="${readValueType}", writeStart="${writeStart}", writeValueType="${writeValueType}", writeType="${writeType}"] \
+% endif
+</%def>
+
+
+
