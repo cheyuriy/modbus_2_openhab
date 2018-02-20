@@ -1,6 +1,9 @@
 import pprint
 import os
-from arpeggio import *
+import sys
+import codecs
+import re
+from arpeggio import ParserPython, visit_parse_tree, ZeroOrMore, EOF, OneOrMore, PTNodeVisitor
 from arpeggio import RegExMatch as _
 
 #Segnetics config grammar
