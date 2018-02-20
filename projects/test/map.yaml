@@ -1,0 +1,30 @@
+discrete:
+  fields:
+    stat_winter_summer: SCo_Зима/~Лето
+    stat_remote_local: SCo_Дист/~Мест
+    stat_block: SCo_Блокировка
+    stat_start_stop: SCo_Пуск/~Стоп
+  items:
+    stat_start_stop: 
+      type: string
+      label: Состояние работы
+      transform: |
+        1=Пуск
+        0=Стоп
+coil:
+  fields:
+    but_start: SCi_Пуск
+    but_stop: SCi_Стоп
+    but_alarm_reset: SCi_Сброс_аварии
+input: 
+  fields:
+    field_t_outdoor: SCo_t_(наружная)
+    field_t_channel: SCo_t_(канала)
+    field_t_water: SCo_t_(обр_воды)
+    field_stat_in_vent: SCo_Status_ВП
+    field_stat_out_vent: SCo_Status_ВВ
+    field_perf_in_vent: SCo_%ВП
+    field_perf_out_vent: SCo_%ВВ
+holding:
+  fields:
+    set_t: SCi_Уставка_t

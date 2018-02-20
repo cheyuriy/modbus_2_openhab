@@ -24,7 +24,7 @@ def var_name_value(): return _(r'.+')
 
 type_sizes = dict(bool=1, int=1, long=2, real=2)
 type_conversions = dict(bool='bit',
-                        int='int16',
+                        int='uint16',
                         long='int32',
                         real='float32_swap')
 
