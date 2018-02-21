@@ -1,0 +1,21 @@
+% for name, data in items_data.items():
+    % if (data['type'] == "string"):
+        ${string(name, data['label'], "", data['thing_full_name'])}
+    % elif (data['type'] == "switch"):    
+        ${switch(name, data['label'], "", data['thing_full_name'])}
+    % elif (data['type'] == "contact"):    
+        ${contact(name, data['label'], "", data['thing_full_name'])}
+    % endif
+% endfor
+
+<%def name="switch(name, label, transform, thing)">
+    Switch ${name} "${label}" {autoupdate="false", channel="modbus:data:${thing}:switch", expire="5s,command=OFF"} \
+</%def>
+
+<%def name="string(name, label, transform, thing)">
+    String ${name} "${label}" {channel="modbus:data:${thing}:string"} \
+</%def>
+
+<%def name="contact(name, label, transform, thing)">
+    Contact ${name} "${label} [%d]" {channel="modbus:data:${thing}:contact"} \
+</%def>

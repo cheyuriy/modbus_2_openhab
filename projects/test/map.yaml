@@ -6,7 +6,7 @@ discrete:
     stat_start_stop: SCo_Пуск/~Стоп
   items:
     stat_start_stop: 
-      type: string
+      type: contact
       label: Состояние работы
       transform: |
         1=Пуск
@@ -16,6 +16,15 @@ coil:
     but_start: SCi_Пуск
     but_stop: SCi_Стоп
     but_alarm_reset: SCi_Сброс_аварии
+  items:
+    but_start:
+      type: switch
+      label: Пуск
+      transform:
+    but_stop:
+      type: switch
+      label: Пуск
+      transform:
 input: 
   fields:
     field_t_outdoor: SCo_t_(наружная)

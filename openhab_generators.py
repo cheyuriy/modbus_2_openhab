@@ -6,10 +6,19 @@ import codecs
 import copy
 
 project_map = None
+
 project_dir = "projects"
-output_dir = "output"
 project_map_filename = "map.yaml"
+
+output_dir = "output"
 output_things_filename = "modbus.things"
+output_items_filename = "modbus.items"
+
+template_dir = "openhab_templates"
+template_things_filename = "modbus_things.template"
+template_items_filename = "modbus_items.template"
+
+tcp_settings = dict(host="10.8.0.20", port=502, id=1, name="TCPconnect")
 
 def read_project(project_name):
     yaml = YAML(typ='safe')
@@ -26,7 +35,7 @@ def read_project(project_name):
 def build_project(project, modbus_data):
     filtered_modbus_data = copy.copy(modbus_data)
     for req_type, data in modbus_data.items():
-        if project[req_type] != None:
+        if req_type in project:
             req_vars = filtered_modbus_data[req_type]['vars']
             req_vars = list(
                 filter(
@@ -47,9 +56,39 @@ def build_project(project, modbus_data):
                                       output_things_filename)
     with codecs.open(output_things_path, "w", encoding="utf-8") as things_file:
         things_file.write(generate_things(filtered_modbus_data))
+
+    fields = dict()
+    items = dict()
+    for req_type, data in project.items():
+        if 'fields' in data:
+            fields.update(data['fields'])
+        if 'items' in data:
+            items.update(data['items'])
+            for item_id, _ in data['items'].items():
+                items[item_id]['thing_full_name'] = "{}:{}:{}".format(tcp_settings['name'],req_type,fields[item_id])
+
+    output_items_path = os.path.join(os.path.dirname(__file__), 
+                                     output_dir, 
+                                     output_items_filename)
+    with codecs.open(output_items_path, "w", encoding="utf-8") as items_file:
+        items_file.write(generate_items(items))
+    
+    print(items) 
     
 
 def generate_things(data):
-    things_template = Template(filename="openhab_templates/modbus_things.template")
-    things_content = things_template.render(requests_data=data, tcp_data=dict(host="10.8.0.20", port=502, id=1))
+    template_things_path = os.path.join(os.path.dirname(__file__), 
+                                        template_dir, 
+                                        template_things_filename)
+    things_template = Template(filename=template_things_path)
+    things_content = things_template.render(requests_data=data, tcp_data=tcp_settings)
     return things_content
+
+
+def generate_items(data):
+    template_items_path = os.path.join(os.path.dirname(__file__), 
+                                       template_dir, 
+                                       template_items_filename)
+    items_template = Template(filename=template_items_path)
+    items_content = items_template.render(items_data=data)
+    return items_content
