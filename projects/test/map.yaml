@@ -18,11 +18,11 @@ coil:
     but_alarm_reset: SCi_Сброс_аварии
   items:
     but_start:
-      type: switch
+      type: pushbutton
       label: Пуск
       transform:
     but_stop:
-      type: switch
+      type: pushbutton
       label: Пуск
       transform:
 input: 

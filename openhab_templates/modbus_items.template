@@ -5,11 +5,17 @@
         ${switch(name, data['label'], "", data['thing_full_name'])}
     % elif (data['type'] == "contact"):    
         ${contact(name, data['label'], "", data['thing_full_name'])}
+    % elif (data['type'] == "pushbutton"):    
+        ${pushbutton(name, data['label'], "", data['thing_full_name'])}
     % endif
 % endfor
 
+<%def name="pushbutton(name, label, transform, thing)">
+    Switch ${name} "${label}" {autoupdate="true", channel="modbus:data:${thing}:switch", expire="5s,command=OFF"} \
+</%def>
+
 <%def name="switch(name, label, transform, thing)">
-    Switch ${name} "${label}" {autoupdate="false", channel="modbus:data:${thing}:switch", expire="5s,command=OFF"} \
+    Switch ${name} "${label}" {autoupdate="false", channel="modbus:data:${thing}:switch"} \
 </%def>
 
 <%def name="string(name, label, transform, thing)">
