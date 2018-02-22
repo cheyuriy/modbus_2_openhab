@@ -5,6 +5,7 @@ import codecs
 import re
 from arpeggio import ParserPython, visit_parse_tree, ZeroOrMore, EOF, OneOrMore, PTNodeVisitor
 from arpeggio import RegExMatch as _
+import uuid
 
 #Segnetics config grammar
 def segnetics_file(): return ZeroOrMore([comment_entry, request_entry]), EOF
@@ -43,7 +44,8 @@ class SegneticsVisitor(PTNodeVisitor):
         return dict(name=children.var_name_value[0],
                     type=type_conversions[children.var_type_value[0]], 
                     size=type_sizes[children.var_type_value[0]],
-                    addr=children.var_address_value[0])
+                    addr=children.var_address_value[0],
+                    id=uuid.uuid4())
     
     def visit_period_param(self, node, children):
         return None
@@ -84,7 +86,7 @@ class SegneticsVisitor(PTNodeVisitor):
         start = request_vars[0]['addr']
         size = request_vars[-1]['addr'] - start + request_vars[-1]['size']
 
-        return (request_type, dict(vars=request_vars, start=start, size=size))
+        return (request_type, dict(vars=request_vars, start=start, size=size, id=uuid.uuid4()))
 
     def visit_comment_entry(self, node, children):
         return None

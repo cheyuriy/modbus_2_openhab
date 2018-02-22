@@ -6,11 +6,27 @@ discrete:
     stat_start_stop: SCo_Пуск/~Стоп
   items:
     stat_start_stop: 
-      type: contact
+      type: string
       label: Состояние работы
       transform: |
-        1=Пуск
-        0=Стоп
+        0=ВЫКЛ
+        1=ВКЛ
+    stat_winter_summer: 
+      type: string
+      label: Зима/Лето
+      transform: |
+        0=Лето
+        1=Зима
+    stat_block:
+      type: contact
+      label: Блокировка
+      transform:
+    stat_remote_local:
+      type: string
+      label: Управление
+      transform: |
+        0=Дистанция
+        1=Местное
 coil:
   fields:
     but_start: SCi_Пуск
@@ -23,7 +39,11 @@ coil:
       transform:
     but_stop:
       type: pushbutton
-      label: Пуск
+      label: Стоп
+      transform:
+    but_alarm_reset:
+      type: pushbutton
+      label: Сброс
       transform:
 input: 
   fields:
@@ -34,6 +54,27 @@ input:
     field_stat_out_vent: SCo_Status_ВВ
     field_perf_in_vent: SCo_%ВП
     field_perf_out_vent: SCo_%ВВ
+  items:
+    field_t_outdoor: 
+      type: string
+      label: Т (наружная)
+      transform:
+    field_t_channel: 
+      type: string
+      label: Т (канала)
+      transform:
+    field_t_water: 
+      type: string
+      label: Т (воды)
+      transform:
+    field_stat_in_vent: 
+      type: contact
+      label: Вентилятор притока
+      transform:
+    field_perf_out_vent: 
+      type: contact
+      label: Вентилятор вытяжки
+      transform:
 holding:
   fields:
     set_t: SCi_Уставка_t

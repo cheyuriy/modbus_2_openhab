@@ -47,33 +47,27 @@ def build_project(project, modbus_data):
                 size=req_vars[-1]['addr'] - req_vars[0]['addr'] + req_vars[-1]['size']))
         else:
             del filtered_modbus_data[req_type]
-    
+
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-        
-    output_things_path = os.path.join(os.path.dirname(__file__), 
-                                      output_dir, 
-                                      output_things_filename)
-    with codecs.open(output_things_path, "w", encoding="utf-8") as things_file:
-        things_file.write(generate_things(filtered_modbus_data))
+
+    generate_things(filtered_modbus_data)
 
     fields = dict()
     items = dict()
     for req_type, data in project.items():
+        req_thing_id = filtered_modbus_data[req_type]['id']
         if 'fields' in data:
             fields.update(data['fields'])
         if 'items' in data:
             items.update(data['items'])
             for item_id, _ in data['items'].items():
-                items[item_id]['thing_full_name'] = "{}:{}:{}".format(tcp_settings['name'],req_type,fields[item_id])
+                item_thing_id = list(filter(lambda item: item['name'] == fields[item_id], filtered_modbus_data[req_type]['vars']))[0]['id']
+                items[item_id]['thing_full_name'] = "{}:{}:{}".format(tcp_settings['name'],req_thing_id,item_thing_id)
 
-    output_items_path = os.path.join(os.path.dirname(__file__), 
-                                     output_dir, 
-                                     output_items_filename)
-    with codecs.open(output_items_path, "w", encoding="utf-8") as items_file:
-        items_file.write(generate_items(items))
-    
-    print(items) 
+    generate_items(items)
+
+    generate_maps(items)
     
 
 def generate_things(data):
@@ -82,7 +76,11 @@ def generate_things(data):
                                         template_things_filename)
     things_template = Template(filename=template_things_path)
     things_content = things_template.render(requests_data=data, tcp_data=tcp_settings)
-    return things_content
+    output_things_path = os.path.join(os.path.dirname(__file__), 
+                                      output_dir, 
+                                      output_things_filename)
+    with codecs.open(output_things_path, "w", encoding="utf-8") as things_file:
+        things_file.write(things_content)
 
 
 def generate_items(data):
@@ -91,4 +89,22 @@ def generate_items(data):
                                        template_items_filename)
     items_template = Template(filename=template_items_path)
     items_content = items_template.render(items_data=data)
-    return items_content
+    output_items_path = os.path.join(os.path.dirname(__file__), 
+                                     output_dir, 
+                                     output_items_filename)
+
+    with codecs.open(output_items_path, "w", encoding="utf-8") as items_file:
+        items_file.write(items_content)
+
+
+def generate_maps(data):
+    output_maps_path = os.path.join(os.path.dirname(__file__), 
+                                    output_dir, 
+                                    output_items_filename)
+    for item, item_data in data.items():
+        if (item_data['transform'] != None):
+            output_maps_path = os.path.join(os.path.dirname(__file__), 
+                                            output_dir, 
+                                            "{}.map".format(item))
+            with codecs.open(output_maps_path, "w", encoding="utf-8") as map_file:
+                map_file.write(item_data['transform'])    
