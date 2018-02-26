@@ -102,9 +102,9 @@ def generate_maps(data):
                                     output_dir, 
                                     output_items_filename)
     for item, item_data in data.items():
-        if (item_data['transform'] != None):
+        if ('mapping' in item_data and item_data['mapping'] != None):
             output_maps_path = os.path.join(os.path.dirname(__file__), 
                                             output_dir, 
                                             "{}.map".format(item))
             with codecs.open(output_maps_path, "w", encoding="utf-8") as map_file:
-                map_file.write(item_data['transform'])    
+                map_file.write(item_data['mapping'])    

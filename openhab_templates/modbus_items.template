@@ -1,31 +1,45 @@
 % for name, data in items_data.items():
     % if (data['type'] == "string"):
-        ${string(name, data['label'], data['transform'], data['thing_full_name'])}
+        ${string(name, data['label'], data['transform'], data['mapping'], data['thing_full_name'])}
+    % elif (data['type'] == "number"):
+        ${number(name, data['label'], data['transform'], data['thing_full_name'])}
     % elif (data['type'] == "switch"):    
-        ${switch(name, data['label'], "", data['thing_full_name'])}
+        ${switch(name, data['label'], data['thing_full_name'])}
     % elif (data['type'] == "contact"):    
-        ${contact(name, data['label'], "", data['thing_full_name'])}
+        ${contact(name, data['label'], data['thing_full_name'])}
     % elif (data['type'] == "pushbutton"):    
-        ${pushbutton(name, data['label'], "", data['thing_full_name'])}
+        ${pushbutton(name, data['label'], data['thing_full_name'])}
     % endif
 % endfor
 
-<%def name="pushbutton(name, label, transform, thing)">
+<%def name="pushbutton(name, label, thing)">
     Switch ${name} "${label}" {autoupdate="true", channel="modbus:data:${thing}:switch", expire="1s,command=OFF"} \
 </%def>
 
-<%def name="switch(name, label, transform, thing)">
+<%def name="switch(name, label, thing)">
     Switch ${name} "${label}" {autoupdate="false", channel="modbus:data:${thing}:switch"} \
 </%def>
 
-<%def name="string(name, label, transform, thing)">
-    % if transform == None:
+<%def name="string(name, label, transform, mapping, thing)">
+    % if transform == None and mapping == None:
     String ${name} "${label}" {channel="modbus:data:${thing}:string"} \
-    % else:
-    String ${name} "${label} [MAP(${name}.map):%s]" {channel="modbus:data:${thing}:string"} \
+    % elif mapping != None and transform !=None:
+    String ${name} "${label} [MAP(${name}.map):${transform}]" {channel="modbus:data:${thing}:string"} \
+    % elif transform != None:
+    String ${name} "${label} [${transform}]" {channel="modbus:data:${thing}:string"} \
+    % elif mapping != None:
+    String ${name} "${label} [MAP(${name}.map)]" {channel="modbus:data:${thing}:string"} \
     % endif
 </%def>
 
-<%def name="contact(name, label, transform, thing)">
+<%def name="number(name, label, transform, thing)">
+    % if transform == None:
+    Number ${name} "${label}" {channel="modbus:data:${thing}:number"} \
+    % elif transform !=None:
+    Number ${name} "${label} [${transform}]" {channel="modbus:data:${thing}:number"} \
+    % endif
+</%def>
+
+<%def name="contact(name, label, thing)">
     Contact ${name} "${label} [%d]" {channel="modbus:data:${thing}:contact"} \
 </%def>

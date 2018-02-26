@@ -2,31 +2,29 @@ discrete:
   fields:
     stat_winter_summer: SCo_Зима/~Лето
     stat_remote_local: SCo_Дист/~Мест
-    stat_block: SCo_Блокировка
     stat_start_stop: SCo_Пуск/~Стоп
   items:
     stat_start_stop: 
       type: string
       label: Состояние работы
-      transform: |
+      transform: "%s"
+      mapping: |
         0=ВЫКЛ
         1=ВКЛ
     stat_winter_summer: 
       type: string
       label: Зима/Лето
-      transform: |
+      transform: "%s"
+      mapping: |
         0=Лето
         1=Зима
-    stat_block:
-      type: contact
-      label: Блокировка
-      transform:
     stat_remote_local:
       type: string
       label: Управление
-      transform: |
-        0=Дистанция
-        1=Местное
+      transform: "%s"
+      mapping: |
+        0=Местное
+        1=Дистанция
 coil:
   fields:
     but_start: SCi_Пуск
@@ -37,44 +35,66 @@ coil:
       type: pushbutton
       label: Пуск
       transform:
+      mapping:
     but_stop:
       type: pushbutton
       label: Стоп
       transform:
+      mapping:
     but_alarm_reset:
       type: pushbutton
-      label: Сброс
+      label: Сброс аварии
       transform:
+      mapping:
 input: 
   fields:
+    field_code_alarm: SCo_Код (Аварии)
+    field_code_state: SCo_Код (Состояние)
     field_t_outdoor: SCo_t_(наружная)
     field_t_channel: SCo_t_(канала)
     field_t_water: SCo_t_(обр_воды)
-    field_stat_in_vent: SCo_Status_ВП
-    field_stat_out_vent: SCo_Status_ВВ
-    field_perf_in_vent: SCo_%ВП
-    field_perf_out_vent: SCo_%ВВ
   items:
+    field_code_alarm:
+      type: string
+      label: Авария
+      transform: "%s"
+      mapping: |
+        0=Нет
+        32=Низкая обр.
+        8=Обрыв ремня
+    field_code_state:
+      type: string
+      label: Состояние
+      transform: "%s"
+      mapping: |
+        1=Остановка
+        4=Отказ ПВ
+        16=Прогрев
+        32=Жалюзи
+        1024=Работа
     field_t_outdoor: 
-      type: string
+      type: number
       label: Т (наружная)
-      transform:
+      transform: "%.1f °C"
+      mapping:
     field_t_channel: 
-      type: string
+      type: number
       label: Т (канала)
-      transform:
+      transform: "%.1f °C"
+      mapping:
     field_t_water: 
-      type: string
+      type: number
       label: Т (воды)
-      transform:
-    field_stat_in_vent: 
-      type: contact
-      label: Вентилятор притока
-      transform:
-    field_perf_out_vent: 
-      type: contact
-      label: Вентилятор вытяжки
-      transform:
+      transform: "%.1f °C"
+      mapping:
 holding:
   fields:
     set_t: SCi_Уставка_t
+  items:
+    set_t:
+      type: number
+      label: Уставка Т
+      transform: "%.1f °C"
+      min: 15.0
+      max: 30.0
+      mapping: 

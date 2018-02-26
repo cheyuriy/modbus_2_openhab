@@ -26,7 +26,7 @@ def var_name_value(): return _(r'.+')
 type_sizes = dict(bool=1, int=1, long=2, real=2)
 type_conversions = dict(bool='bit',
                         int='uint16',
-                        long='int32',
+                        long='uint32_swap',
                         real='float32_swap')
 
 class SegneticsVisitor(PTNodeVisitor):
