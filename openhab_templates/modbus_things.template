@@ -1,14 +1,32 @@
 ${tcp(tcp_data['host'], tcp_data['port'], tcp_data['id'], tcp_data['name'])} {
     % for type, req_data in requests_data.items():
-        ${poller(req_data['id'], type, req_data['start'], req_data['size'], type)} {
-        % for var in req_data['vars']:
-            % if (type == 'coil' or type == 'holding'):
-            ${data_writer(var['id'], var['name'], var['addr'], var['type'], type)}
-            % else:
-            ${data_reader(var['id'], var['name'], var['addr'], var['type'])}
-            % endif
-        % endfor
+        <%
+            def make_chunks(l, n):
+                chunks_list = []
+                curr_chunk = []
+                start_addr = req_data['vars'][0]['addr']
+                for var in l:
+                    if (var['addr'] + var['size'] - start_addr > n):
+                        chunks_list.append(curr_chunk)
+                        curr_chunk = []
+                        start_addr = var['addr']
+                    curr_chunk.append(var)
+                chunks_list.append(curr_chunk)
+                return chunks_list
+
+            chunks = make_chunks(req_data['vars'], 120)
+        %>
+        % for vars_chunk in chunks:
+            ${poller(req_data['id'], type, vars_chunk[0]['addr'], vars_chunk[-1]['addr']-vars_chunk[0]['addr']+vars_chunk[-1]['size'], type)} {
+            % for var in vars_chunk:
+                % if (type == 'coil' or type == 'holding'):
+                ${data_writer(var['id'], var['name'], var['addr'], var['type'], type)}
+                % else:
+                ${data_reader(var['id'], var['name'], var['addr'], var['type'])}
+                % endif
+            % endfor
     }
+        % endfor    
     % endfor
 }
 
@@ -28,5 +46,9 @@ Bridge modbus:tcp:${name} "${name}" [host="${host}", port=${port}, id=${slave}, 
         Thing data ${id} "${name}" [writeStart="${writeStart}", writeValueType="${writeValueType}", writeType="${writeType}"] \
 </%def>
 
+<% 
+def make_chunks(l, n):
+    return [l[i::n] for i in xrange(n)]
+%>
 
 

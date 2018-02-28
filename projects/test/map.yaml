@@ -53,6 +53,7 @@ input:
     field_t_outdoor: SCo_t_(наружная)
     field_t_channel: SCo_t_(канала)
     field_t_water: SCo_t_(обр_воды)
+    field_t: SCo_%ВВ
   items:
     field_code_alarm:
       type: string
@@ -95,6 +96,4 @@ holding:
       type: number
       label: Уставка Т
       transform: "%.1f °C"
-      min: 15.0
-      max: 30.0
       mapping: 

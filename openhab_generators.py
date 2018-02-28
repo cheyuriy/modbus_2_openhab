@@ -6,21 +6,28 @@ import codecs
 import copy
 
 project_map = None
+project_name = None
 
 project_dir = "projects"
 project_map_filename = "map.yaml"
+project_site_filename = "site.yaml"
 
 output_dir = "output"
 output_things_filename = "modbus.things"
 output_items_filename = "modbus.items"
+output_sitemap_filename = "modbus.sitemap"
 
 template_dir = "openhab_templates"
 template_things_filename = "modbus_things.template"
 template_items_filename = "modbus_items.template"
+template_sitemap_filename = "modbus_sitemap.template"
 
 tcp_settings = dict(host="10.8.0.20", port=502, id=1, name="TCPconnect")
 
-def read_project(project_name):
+def read_project(name):
+    global project_name
+    global project_map 
+    project_name = name
     yaml = YAML(typ='safe')
     project_map_path = os.path.join(os.path.dirname(__file__), 
                                     project_dir,
@@ -68,6 +75,8 @@ def build_project(project, modbus_data):
     generate_items(items)
 
     generate_maps(items)
+
+    generate_sitemap(items)
     
 
 def generate_things(data):
@@ -75,7 +84,7 @@ def generate_things(data):
                                         template_dir, 
                                         template_things_filename)
     things_template = Template(filename=template_things_path)
-    things_content = things_template.render(requests_data=data, tcp_data=tcp_settings)
+    things_content = things_template.render(requests_data=data, tcp_data=tcp_settings, local_vars={})
     output_things_path = os.path.join(os.path.dirname(__file__), 
                                       output_dir, 
                                       output_things_filename)
@@ -108,3 +117,26 @@ def generate_maps(data):
                                             "{}.map".format(item))
             with codecs.open(output_maps_path, "w", encoding="utf-8") as map_file:
                 map_file.write(item_data['mapping'])    
+
+def generate_sitemap(data):
+    yaml = YAML(typ='safe')
+    project_site_path = os.path.join(os.path.dirname(__file__), 
+                                     project_dir,
+                                     project_name, 
+                                     project_site_filename)
+
+    with codecs.open(project_site_path, "r", encoding="utf-8") as project_site_file:
+        project_site = yaml.load(project_site_file)
+
+    template_sitemap_path = os.path.join(os.path.dirname(__file__), 
+                                         template_dir, 
+                                         template_sitemap_filename)
+    sitemap_template = Template(filename=template_sitemap_path)
+    sitemap_content = sitemap_template.render(map=project_site, items=data)
+
+    output_sitemap_path = os.path.join(os.path.dirname(__file__), 
+                                       output_dir, 
+                                       output_sitemap_filename)
+
+    with codecs.open(output_sitemap_path, "w", encoding="utf-8") as sitemap_file:
+        sitemap_file.write(sitemap_content)

@@ -1,0 +1,19 @@
+main:
+  field_code_state:
+  field_t_outdoor:
+  field_t_channel:
+  field_t_water:
+  control:
+    label: Управление
+control:
+  field_code_state:
+  but_start:
+  but_stop:
+  stat_winter_summer:
+  stat_remote_local:
+  field_code_alarm:
+  but_alarm_reset:
+  set_t:
+    minValue: 15
+    maxValue: 30
+    step: 0.5
