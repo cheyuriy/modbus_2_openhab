@@ -1,0 +1,46 @@
+${sitemap(name)} 
+${process_screen(map['main'].items())}
+
+<%def name="sitemap(name)">
+sitemap ${name} label="${name}" \
+</%def>
+
+<%def name="put_element(item, type, options)">
+    <%
+        options_string = ""
+        if options != None:
+            options_string = " ".join("{}={}".format(k, v) for (k, v) in options.items())
+    %>
+    % if (type == "string"):
+Text item=${item} ${options_string} \
+    % elif (type == "number"):
+Text item=${item} ${options_string} \
+    % elif (type == "setpoint"):
+Setpoint item=${item} ${options_string} \
+    % elif (type == "pushbutton"): 
+Switch item=${item} ${options_string} \
+    % endif
+</%def>
+
+<%def name="embrace()">
+{ 
+    Frame { 
+        ${caller.body()} 
+    } 
+} 
+</%def>
+
+<%def name="process_screen(d)">
+    <%self:embrace>
+    % for k,v in d:
+        % if (k in items.keys()):
+        ${put_element(k, items[k]['type'], v)} 
+        % else:
+        Text label="${v['label']}" ${process_screen(map[k].items())} 
+        % endif
+    % endfor
+    </%self:embrace>
+</%def>            
+
+    
+        

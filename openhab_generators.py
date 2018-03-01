@@ -55,6 +55,10 @@ def build_project(project, modbus_data):
         else:
             del filtered_modbus_data[req_type]
 
+    global output_dir
+    output_dir = os.path.join(os.path.dirname(__file__),
+                              output_dir,
+                              project_name)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -124,7 +128,6 @@ def generate_sitemap(data):
                                      project_dir,
                                      project_name, 
                                      project_site_filename)
-
     with codecs.open(project_site_path, "r", encoding="utf-8") as project_site_file:
         project_site = yaml.load(project_site_file)
 
@@ -132,11 +135,10 @@ def generate_sitemap(data):
                                          template_dir, 
                                          template_sitemap_filename)
     sitemap_template = Template(filename=template_sitemap_path)
-    sitemap_content = sitemap_template.render(map=project_site, items=data)
+    sitemap_content = sitemap_template.render(map=project_site, items=data, name=project_name)
 
     output_sitemap_path = os.path.join(os.path.dirname(__file__), 
                                        output_dir, 
                                        output_sitemap_filename)
-
     with codecs.open(output_sitemap_path, "w", encoding="utf-8") as sitemap_file:
         sitemap_file.write(sitemap_content)

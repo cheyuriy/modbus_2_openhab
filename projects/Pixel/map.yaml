@@ -93,7 +93,7 @@ holding:
     set_t: SCi_Уставка_t
   items:
     set_t:
-      type: number
+      type: setpoint
       label: Уставка Т
       transform: "%.1f °C"
       mapping: 

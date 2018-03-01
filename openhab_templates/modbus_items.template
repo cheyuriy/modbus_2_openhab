@@ -3,6 +3,8 @@
         ${string(name, data['label'], data['transform'], data['mapping'], data['thing_full_name'])}
     % elif (data['type'] == "number"):
         ${number(name, data['label'], data['transform'], data['thing_full_name'])}
+    % elif (data['type'] == "setpoint"):
+        ${number(name, data['label'], data['transform'], data['thing_full_name'])}
     % elif (data['type'] == "switch"):    
         ${switch(name, data['label'], data['thing_full_name'])}
     % elif (data['type'] == "contact"):    
