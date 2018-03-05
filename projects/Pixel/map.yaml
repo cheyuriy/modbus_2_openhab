@@ -53,7 +53,7 @@ input:
     field_t_outdoor: SCo_t_(наружная)
     field_t_channel: SCo_t_(канала)
     field_t_water: SCo_t_(обр_воды)
-    field_t: SCo_%ВВ
+    field_perf_water_cal: SCo_%ВоКал
   items:
     field_code_alarm:
       type: string
@@ -87,6 +87,11 @@ input:
       type: number
       label: Т (воды)
       transform: "%.1f °C"
+      mapping:  
+    field_perf_water_cal:
+      type: number
+      label: Водный калорифер
+      transform: "%d %%"
       mapping:
 holding:
   fields:

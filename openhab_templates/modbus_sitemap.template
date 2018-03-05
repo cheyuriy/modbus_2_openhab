@@ -2,7 +2,7 @@ ${sitemap(name)}
 ${process_screen(map['main'].items())}
 
 <%def name="sitemap(name)">
-sitemap ${name} label="${name}" \
+sitemap modbus label="${name}" \
 </%def>
 
 <%def name="put_element(item, type, options)">
