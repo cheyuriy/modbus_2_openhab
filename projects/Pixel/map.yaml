@@ -54,6 +54,7 @@ input:
     field_t_channel: SCo_t_(канала)
     field_t_water: SCo_t_(обр_воды)
     field_perf_water_cal: SCo_%ВоКал
+    field_set_t: SCo_Уставка_t
   items:
     field_code_alarm:
       type: string
@@ -93,6 +94,10 @@ input:
       label: Водный калорифер
       transform: "%d %%"
       mapping:
+    field_set_t:
+      type: number
+      label: Текущая уставка Т
+      transform: "%.1f °C"
 holding:
   fields:
     set_t: SCi_Уставка_t

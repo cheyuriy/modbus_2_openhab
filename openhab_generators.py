@@ -5,6 +5,7 @@ import os
 import codecs
 import copy
 import uuid
+import logging
 
 project_map = None
 project_name = None

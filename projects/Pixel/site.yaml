@@ -3,6 +3,7 @@ main:
   field_t_outdoor:
   field_t_channel:
   field_t_water:
+  field_perf_water_cal:
   control:
     label: Управление
 control:
@@ -13,6 +14,7 @@ control:
   stat_remote_local:
   field_code_alarm:
   but_alarm_reset:
+  field_set_t:
   set_t:
     minValue: 15
     maxValue: 30

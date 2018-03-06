@@ -1,5 +1,11 @@
+<%!  
+    import re
+%>
 ${tcp(tcp_data['host'], tcp_data['port'], tcp_data['id'], tcp_data['name'])} {
     % for type, req_data in requests_data.items():
+        <%  
+            type = re.sub("\d","",type)
+        %>
         ${poller(req_data['id'], type, req_data['vars'][0]['addr'], req_data['vars'][-1]['addr']-req_data['vars'][0]['addr']+req_data['vars'][-1]['size'], type)} {
             % for var in req_data['vars']:
                 % if (type.startswith('coil') or type.startswith('holding')):
