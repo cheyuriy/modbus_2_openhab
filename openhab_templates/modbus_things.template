@@ -1,25 +1,57 @@
 <%!  
     import re
 %>
-${tcp(tcp_data['host'], tcp_data['port'], tcp_data['id'], tcp_data['name'])} {
+${tcp(**tcp_data)} 
+<%self:embrace>
     % for type, req_data in requests_data.items():
         <%  
             type = re.sub("\d","",type)
+            poller_args = {
+                'id': req_data['id'],
+                'name': type,
+                'start': req_data['vars'][0]['addr'],
+                'length': req_data['vars'][-1]['addr'] - req_data['vars'][0]['addr'] + req_data['vars'][-1]['size'],
+                'type': type
+            }
         %>
-        ${poller(req_data['id'], type, req_data['vars'][0]['addr'], req_data['vars'][-1]['addr']-req_data['vars'][0]['addr']+req_data['vars'][-1]['size'], type)} {
+        ${poller(**poller_args)} 
+        <%self:embrace>
             % for var in req_data['vars']:
                 % if (type.startswith('coil') or type.startswith('holding')):
-                ${data_writer(var['id'], var['name'], var['addr'], var['type'], type)}
+                <%
+                    var_args = {
+                        'id': var['id'],
+                        'name': var['name'],
+                        'writeStart': var['addr'],
+                        'writeValueType': var['type'],
+                        'writeType': type
+                    }
+                %>
+                ${data_writer(**var_args)}
                 % else:
-                ${data_reader(var['id'], var['name'], var['addr'], var['type'])}
+                <%
+                    var_args = {
+                        'id': var['id'],
+                        'name': var['name'],
+                        'readStart': var['addr'],
+                        'readValueType': var['type'],
+                    }
+                %>
+                ${data_reader(**var_args)}
                 % endif
             % endfor
-    }    
+        </%self:embrace>    
     % endfor
-}
+</%self:embrace>
 
-<%def name="tcp(host, port, slave, name)">
-Bridge modbus:tcp:${name} "${name}" [host="${host}", port=${port}, id=${slave}, reconnectAfterMillis=120000] \
+<%def name="embrace()">
+{ 
+    ${caller.body()} 
+} 
+</%def>
+
+<%def name="tcp(host, port, id, name)">
+Bridge modbus:tcp:${name} "${name}" [host="${host}", port=${port}, id=${id}, reconnectAfterMillis=120000] \
 </%def>
 
 <%def name="poller(id, name, start, length, type)">

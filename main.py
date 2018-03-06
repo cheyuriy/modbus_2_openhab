@@ -6,7 +6,9 @@ import codecs
 import importlib
 import logging
 import itertools
+from ruamel.yaml import YAML
 from openhab_generators import read_project, build_project
+from config import config
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO)

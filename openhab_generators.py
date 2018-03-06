@@ -1,6 +1,7 @@
 from mako.template import Template
 from mako.runtime import Context
 from ruamel.yaml import YAML
+from config import config
 import os
 import codecs
 import copy
@@ -10,23 +11,21 @@ import logging
 project_map = None
 project_name = None
 
-# TODO: move all these variables to config
-project_dir = "projects"
-project_map_filename = "map.yaml"
-project_site_filename = "site.yaml"
+project_dir = config['project']['dir']
+project_map_filename = config['project']['map_filename']
+project_site_filename = config['project']['site_filename']
 
-output_dir = "output"
-output_things_filename = "modbus.things"
-output_items_filename = "modbus.items"
-output_sitemap_filename = "modbus.sitemap"
+output_dir = config['output']['dir']
+output_things_filename = config['output']['things_filename']
+output_items_filename = config['output']['items_filename']
+output_sitemap_filename = config['output']['sitemap_filename']
 
-template_dir = "openhab_templates"
-template_things_filename = "modbus_things.template"
-template_items_filename = "modbus_items.template"
-template_sitemap_filename = "modbus_sitemap.template"
+template_dir = config['templates']['dir']
+template_things_filename = config['templates']['things_template']
+template_items_filename = config['templates']['items_template']
+template_sitemap_filename = config['templates']['sitemap_template']
 
-# TODO: move this to arguments of program and/or config file
-tcp_settings = dict(host="10.8.0.20", port=502, id=1, name="TCPconnect")
+tcp_settings = config['tcp']
 
 # read project map.yaml in memory and return it as a dict
 # supposing that it will be stored in a projects directory in a subdirectory with the same name, as specified project name
@@ -41,6 +40,7 @@ def read_project(name):
                                     project_map_filename)
 
     with codecs.open(project_map_path, "r", encoding="utf-8") as project_map_file:
+        logging.info("Opening project \"{}\" map: {}".format(project_name, project_map_path))
         project_map = yaml.load(project_map_file)
     
     return project_map
@@ -109,6 +109,7 @@ def build_project(project, modbus_data):
         # however it will be transfered into the same poller type as original request by removing index after the name (see things' template)
         # all additional request will be put into extra_modbus_data dict because we can't add items to currently iterated dict modbus_data
         if len(chunks) > 1:
+            logging.info("Modbus request \"{}\" is too long and will be broken in {} parts".format(req_type, len(chunks)))
             i = 0
             for chunk in chunks[1:len(chunks)]:
                 req_type_incremented = "{}{}".format(req_type, i)
@@ -132,6 +133,7 @@ def build_project(project, modbus_data):
                               output_dir,
                               project_name)
     if not os.path.exists(output_dir):
+        logging.info("Creating output directory for \"{}\" project: {}".format(project_name, output_dir))
         os.makedirs(output_dir)
 
     # call generator for .things files based on modbus_data
@@ -198,12 +200,14 @@ def generate_things(data):
     template_things_path = os.path.join(os.path.dirname(__file__), 
                                         template_dir, 
                                         template_things_filename)
+    logging.info("Generating .things file with template: {}".format(template_things_path))
     things_template = Template(filename=template_things_path)
     things_content = things_template.render(requests_data=data, tcp_data=tcp_settings, local_vars={})
     output_things_path = os.path.join(os.path.dirname(__file__), 
                                       output_dir, 
                                       output_things_filename)
     with codecs.open(output_things_path, "w", encoding="utf-8") as things_file:
+        logging.info("Saving .things file: {}".format(output_things_path))
         things_file.write(things_content)
 
 # generate .items file based on items data from project config using items' template
@@ -212,6 +216,7 @@ def generate_items(data):
     template_items_path = os.path.join(os.path.dirname(__file__), 
                                        template_dir, 
                                        template_items_filename)
+    logging.info("Generating .items file with template: {}".format(template_items_path))
     items_template = Template(filename=template_items_path)
     items_content = items_template.render(items_data=data)
     output_items_path = os.path.join(os.path.dirname(__file__), 
@@ -219,6 +224,7 @@ def generate_items(data):
                                      output_items_filename)
 
     with codecs.open(output_items_path, "w", encoding="utf-8") as items_file:
+        logging.info("Saving .items file: {}".format(output_items_path))
         items_file.write(items_content)
 
 # generate .map file(s) based on items data from project config
@@ -226,6 +232,7 @@ def generate_items(data):
 # (see https://docs.openhab.org/addons/transformations/map/readme.html)
 # file(s) will be stored in output directory in a subdirectory with the same name as an item
 def generate_maps(data):
+    logging.info("Generating .map files")
     output_maps_path = os.path.join(os.path.dirname(__file__), 
                                     output_dir, 
                                     output_items_filename)
@@ -235,6 +242,7 @@ def generate_maps(data):
                                             output_dir, 
                                             "{}.map".format(item))
             with codecs.open(output_maps_path, "w", encoding="utf-8") as map_file:
+                logging.info("Saving .map file for \"{}\" item: {}".format(item, output_maps_path))
                 map_file.write(item_data['mapping'])    
 
 # generate .sitemap file based on items and project's site.yaml using sitemap's template
@@ -246,11 +254,13 @@ def generate_sitemap(data):
                                      project_name, 
                                      project_site_filename)
     with codecs.open(project_site_path, "r", encoding="utf-8") as project_site_file:
+        logging.info("Opening project \"{}\" site: {}".format(project_name, project_site_path))
         project_site = yaml.load(project_site_file)
 
     template_sitemap_path = os.path.join(os.path.dirname(__file__), 
                                          template_dir, 
                                          template_sitemap_filename)
+    logging.info("Generating .sitemap file with template: {}".format(template_sitemap_path))
     sitemap_template = Template(filename=template_sitemap_path)
     sitemap_content = sitemap_template.render(map=project_site, items=data, name=project_name)
 
@@ -258,4 +268,5 @@ def generate_sitemap(data):
                                        output_dir, 
                                        output_sitemap_filename)
     with codecs.open(output_sitemap_path, "w", encoding="utf-8") as sitemap_file:
+        logging.info("Saving .sitemap file: {}".format(output_sitemap_path))
         sitemap_file.write(sitemap_content)

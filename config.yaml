@@ -1,0 +1,19 @@
+project:
+  dir: "projects"
+  map_filename: "map.yaml"
+  site_filename: "site.yaml"
+output:
+  dir: "output"
+  things_filename: "modbus.things"
+  items_filename: "modbus.items"
+  sitemap_filename: "modbus.sitemap"
+templates:
+  dir: "openhab_templates"
+  things_template: "modbus_things.template"
+  items_template: "modbus_items.template"
+  sitemap_template: "modbus_sitemap.template"
+tcp:
+  host: "10.8.0.20"
+  port: 502
+  id: 1
+  name: "TCPConnect"
