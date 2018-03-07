@@ -2,10 +2,10 @@
     <%
         item_args = {
             'name': name,
-            'label': data.get('label', name)
+            'label': data.get('label', name),
             'type': data['type'],
             'thing_full_name': data['thing_full_name'],
-            'transform': data.get('transform', None)
+            'transform': data.get('transform', None),
             'mapping': data.get('mapping', None)
         }
     %>
@@ -20,7 +20,7 @@
         elif mapping != None:
             map_transform_string = " [MAP({}.map)]".format(name)
         elif transform != None:
-            map_transform_string = " S[{}]".format(transform)
+            map_transform_string = " [{}]".format(transform)
     %>
 
     % if type == "string":

@@ -95,30 +95,9 @@ class SegneticsVisitor(PTNodeVisitor):
         return dict(list(children))
 
 
-def parse(content):
-    parser = ParserPython(segnetics_file, reduce_tree=True)
-    parse_tree = visit_parse_tree(parser.parse(content), SegneticsVisitor())
-    return parse_tree
-
-
-def main(file_name=None):
-    if not file_name:
-        file_name = os.path.join(os.path.dirname(__file__),
-                                 'test.map')
-
-    with codecs.open(file_name, "r", encoding="cp1251") as opened_file:
+def parse(file, enc):
+    with codecs.open(file, "r", encoding=enc) as opened_file:
         opened_file_content = opened_file.read()
-
-    parse_tree = parse(opened_file_content)
-
+    parser = ParserPython(segnetics_file, reduce_tree=True)
+    parse_tree = visit_parse_tree(parser.parse(opened_file_content), SegneticsVisitor())
     return parse_tree
-
-
-if __name__ == "__main__":
-    # First parameter is segnetics modbus configuration file
-    if len(sys.argv) > 1:
-        entries = main(file_name=sys.argv[1])
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(entries)
-    else:
-        print("Usage: python bibtex.py file_to_parse")

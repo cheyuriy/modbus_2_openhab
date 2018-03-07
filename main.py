@@ -17,11 +17,6 @@ def main() -> None:
 
     args = get_args()
 
-    # opening modbus configuration file with specified encoding (see command line arguments)
-    with codecs.open(args.input_file, "r", encoding=args.encoding) as opened_file:
-        logging.info("Opening modbus config file: {}".format(args.input_file))
-        opened_file_content = opened_file.read()
-
     # parsing modbus configuration file, using parsing module in 'controllers' directory
     # name of the module must correspond to provided argument (see command line arguments)
     # every parsing module must provide function 'parse', which receives content of modbus configuration file 
@@ -31,7 +26,8 @@ def main() -> None:
     logging.info("Loading controller-specific module for parsing modbus config: {}".format(parsing_module_name))
     controller = importlib.import_module(parsing_module_name)
     logging.info("Parsing modbus config")
-    requests_spec = controller.parse(opened_file_content)
+    requests_spec = controller.parse(args.input_file, args.encoding)
+    print(requests_spec)
     logging.info("Parsed config consists of {} requests".format(len(requests_spec.keys())))
 
     # there must be subdirectory in 'projects' directory with the same name as provided project name (see command line arguments)

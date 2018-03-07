@@ -1,0 +1,129 @@
+coil:
+  fields:
+    c1: out{g}q1
+    c2: out{g}q2
+    c3: out{g}q3
+    c4: out{g}q4
+    c5: out{g}q5
+    c6: out{g}q6
+    c7: out{g}q7
+    c8: out{g}q8
+  items:
+    c1:
+      type: string
+      label: Катушка 1
+      transform: "%s"
+    c2:
+      type: string
+      label: Катушка 2
+      transform: "%s"
+    c3:
+      type: string
+      label: Катушка 3
+      transform: "%s"
+    c4:
+      type: string
+      label: Катушка 4
+      transform: "%s"
+    c5:
+      type: string
+      label: Катушка 5
+      transform: "%s"
+    c6:
+      type: string
+      label: Катушка 6
+      transform: "%s"
+    c7:
+      type: string
+      label: Катушка 7
+      transform: "%s"
+    c8:
+      type: string
+      label: Катушка 8
+      transform: "%s"
+input: 
+  fields:
+    f1: in{g}t1
+    f2: in{g}t2
+    f3: in{g}t3
+    f4: in{g}t4
+    f5: in{g}t5
+    f6: in{g}t6
+    f7: in{g}t7
+    f8: in{g}t8
+  items:
+    f1:
+      type: string
+      label: Поле 1
+      transform: "%s"
+    f2:
+      type: string
+      label: Поле 2
+      transform: "%s"
+    f3:
+      type: string
+      label: Поле 3
+      transform: "%s"
+    f4:
+      type: string
+      label: Поле 4
+      transform: "%s"
+    f5:
+      type: string
+      label: Поле 5
+      transform: "%s"
+    f6:
+      type: string
+      label: Поле 6
+      transform: "%s"
+    f7:
+      type: string
+      label: Поле 7
+      transform: "%s"
+    f8:
+      type: string
+      label: Поле 8
+      transform: "%s"  
+holding:
+  fields:
+    h1: ust{g}ust1
+    h2: ust{g}ust2
+    h3: ust{g}ust3
+    h4: ust{g}ust4
+    h5: ust{g}ust5
+    h6: ust{g}ust6
+    h7: ust{g}ust7
+    h8: ust{g}ust8
+  items:
+    h1:
+      type: setpoint
+      label: Уставка 1
+      transform: "%.1f"
+    h2:
+      type: setpoint
+      label: Уставка 2
+      transform: "%.1f"
+    h3:
+      type: setpoint
+      label: Уставка 3
+      transform: "%.1f"
+    h4:
+      type: setpoint
+      label: Уставка 4
+      transform: "%.1f"
+    h5:
+      type: setpoint
+      label: Уставка 5
+      transform: "%.1f"
+    h6:
+      type: setpoint
+      label: Уставка 6
+      transform: "%.1f"
+    h7:
+      type: setpoint
+      label: Уставка 7
+      transform: "%.1f"
+    h8:
+      type: setpoint
+      label: Уставка 8
+      transform: "%.1f"
