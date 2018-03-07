@@ -8,7 +8,6 @@ import copy
 import uuid
 import logging
 
-project_map = None
 project_name = None
 
 project_dir = config['project']['dir']
@@ -31,7 +30,6 @@ tcp_settings = config['tcp']
 # supposing that it will be stored in a projects directory in a subdirectory with the same name, as specified project name
 def read_project(name):
     global project_name
-    global project_map 
     project_name = name
     yaml = YAML(typ='safe')
     project_map_path = os.path.join(os.path.dirname(__file__), 
@@ -66,8 +64,8 @@ def chunk_size(c):
     return (c[-1]['addr'] - c[0]['addr'] + c[-1]['size'])
 
 # main function to join read project data and modbus configuration and generate necessary OpenHab's files
-def build_project(project, modbus_data):
-
+def build_project(project_name, modbus_data):
+    project = read_project(project_name)
     # remove not mentioned in 'project' requests from modbus_data
     modbus_data = dict(
         list(

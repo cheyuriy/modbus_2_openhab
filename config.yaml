@@ -17,3 +17,5 @@ tcp:
   port: 502
   id: 1
   name: "TCPConnect"
+general:
+  verbose_logging: true

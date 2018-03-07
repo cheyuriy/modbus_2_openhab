@@ -11,7 +11,8 @@ from openhab_generators import read_project, build_project
 from config import config
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO)
+    if config['general']['verbose_logging']:
+        logging.basicConfig(level=logging.INFO)
     logging.info("Started modbus2openhab")
 
     args = get_args()
@@ -33,13 +34,10 @@ def main() -> None:
     requests_spec = controller.parse(opened_file_content)
     logging.info("Parsed config consists of {} requests".format(len(requests_spec.keys())))
 
-    # reading project dir
     # there must be subdirectory in 'projects' directory with the same name as provided project name (see command line arguments)
     # project directory must contain map.yaml and site.yaml files, which describes OpenHab's structure
-    project = read_project(args.project_dir)
-
     # building project based on project's structure and parsed modbus configuration
-    build_project(project, requests_spec)
+    build_project(args.project, requests_spec)
     logging.info("Done")
 
 
@@ -67,7 +65,7 @@ def get_args():
     argParser.add_argument('-p',
                            metavar='directory with project-specific files',
                            type=str,
-                           dest="project_dir",
+                           dest="project",
                            help='specify project name to use (should be a subdirectory inside /projects folder)')                       
     args = argParser.parse_args()
 
