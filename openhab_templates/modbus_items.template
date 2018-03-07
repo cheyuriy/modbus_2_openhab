@@ -1,18 +1,40 @@
 % for name, data in items_data.items():
-    % if (data['type'] == "string"):
-        ${string(name, data['label'], data['transform'], data['mapping'], data['thing_full_name'])}
-    % elif (data['type'] == "number"):
-        ${number(name, data['label'], data['transform'], data['thing_full_name'])}
-    % elif (data['type'] == "setpoint"):
-        ${number(name, data['label'], data['transform'], data['thing_full_name'])}
-    % elif (data['type'] == "switch"):    
-        ${switch(name, data['label'], data['thing_full_name'])}
-    % elif (data['type'] == "contact"):    
-        ${contact(name, data['label'], data['thing_full_name'])}
-    % elif (data['type'] == "pushbutton"):    
-        ${pushbutton(name, data['label'], data['thing_full_name'])}
-    % endif
+    <%
+        item_args = {
+            'name': name,
+            'label': data.get('label', name)
+            'type': data['type'],
+            'thing_full_name': data['thing_full_name'],
+            'transform': data.get('transform', None)
+            'mapping': data.get('mapping', None)
+        }
+    %>
+    ${item(**item_args)}
 % endfor
+
+<%def name="item(name, label, type, thing_full_name, transform, mapping)">
+    <%
+        map_transform_string = ""
+        if mapping != None and transform != None:
+            map_transform_string = " [MAP({}.map):{}]".format(name, transform)
+        elif mapping != None:
+            map_transform_string = " [MAP({}.map)]".format(name)
+        elif transform != None:
+            map_transform_string = " S[{}]".format(transform)
+    %>
+
+    % if type == "string":
+        String ${name} "${label}${map_transform_string}" {channel="modbus:data:${thing_full_name}:string"} \
+    % elif type in ["number", "setpoint"]:
+        Number ${name} "${label}${map_transform_string}" {channel="modbus:data:${thing_full_name}:number"} \
+    % elif type == "switch":
+        Switch ${name} "${label}${map_transform_string}" {autoupdate="false", channel="modbus:data:${thing_full_name}:switch"} \
+    % elif type == "pushbutton":
+        Switch ${name} "${label}${map_transform_string}" {autoupdate="false", channel="modbus:data:${thing_full_name}:switch", expire="1s,command=OFF"} \
+    % elif type == "contact":
+        Contact ${name} "${label}${map_transform_string}" {channel="modbus:data:${thing_full_name}:contact"} \
+    % endif
+</%def>
 
 <%def name="pushbutton(name, label, thing)">
     Switch ${name} "${label}" {autoupdate="true", channel="modbus:data:${thing}:switch", expire="1s,command=OFF"} \
